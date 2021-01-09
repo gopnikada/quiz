@@ -3,11 +3,14 @@ package com.kirill.quiz;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,13 +60,30 @@ public class QuizActivity extends AppCompatActivity {
 
         showNextQuestion();
 
+        buttonConfirmNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { //button handler
+                if(!answered){
+                    if(rb1.isChecked() || rb2.isChecked() || rb3.isChecked()){
+                        checkAnswer();
+                    }else{
+                        Toast.makeText(QuizActivity.this, "Please select an answer", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    showNextQuestion();
+                }
+            }
+        });
+
     }
+
+
 
     private void showNextQuestion() {
         rb1.setTextColor(textColourDefaultRb);//setting radio buttons colors to default color before making a choice->
         rb2.setTextColor(textColourDefaultRb);// right - green, fail - red
         rb3.setTextColor(textColourDefaultRb);
-        rbGroup.clearCheck();//make all options uncheck
+        rbGroup.clearCheck();
 
         if(questionCounter < questionCountTotal){
             currentQuestion = questionList.get(questionCounter);
@@ -81,7 +101,45 @@ public class QuizActivity extends AppCompatActivity {
         }
 
     }
+    private void checkAnswer() {
+        answered = true;
+
+        RadioButton rbSelected = findViewById(rbGroup.getCheckedRadioButtonId());//selected radio button id
+        int answerNr = rbGroup.indexOfChild(rbSelected) + 1;//0+1
+
+        if(answerNr == currentQuestion.getAnswerNr()){//compering selected rb and right answer
+            score++;
+            textViewScore.setText("Score: " + score);//increasing the score
+        }
+        showSolution();
+    }
+    private void showSolution() {
+        rb1.setTextColor(Color.RED);
+        rb2.setTextColor(Color.RED);
+        rb3.setTextColor(Color.RED);
+
+        switch (currentQuestion.getAnswerNr()){
+            case 1:
+                rb1.setTextColor(Color.GREEN);
+                textViewQuestion.setText("Answer 1 is Correct");
+                break;
+            case 2:
+                rb2.setTextColor(Color.GREEN);
+                textViewQuestion.setText("Answer 2 is Correct");
+                break;
+            case 3:
+                rb3.setTextColor(Color.GREEN);
+                textViewQuestion.setText("Answer 3 is Correct");
+                break;
+        }
+        if(questionCounter < questionCounter){
+            buttonConfirmNext.setText("Next");
+        }else{
+            buttonConfirmNext.setText("Finish");
+        }
+    }
 
     private void finishQuiz() {
+        finish();
     }
 }
