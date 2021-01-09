@@ -2,8 +2,9 @@ package com.kirill.quiz;
 
 import android.provider.BaseColumns;
 
-public final class QuizContract implements BaseColumns {
-    public static class QuestionsTable{ //database table model
+public final class QuizContract  {
+    private QuizContract() {}
+    public static class QuestionsTable implements BaseColumns{ //database table model
         public static final String TABLE_NAME = "quiz_questions";
         public static final String COLUMN_QUESTION = "question";
         public static final String COLUMN_OPTION1 = "option1";
