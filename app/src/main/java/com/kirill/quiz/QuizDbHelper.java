@@ -34,12 +34,28 @@ public class QuizDbHelper extends SQLiteOpenHelper {
                 QuestionsTable.COLUMN_ANSWER_NR + " INTEGER" +
                 ")";
 
-        db.execSQL(SQL_CREATE_QUESTIONS_TABLE);
+        db.execSQL(SQL_CREATE_QUESTIONS_TABLE); //execute sql statement
+        fillQuestionsTable();
 
     }
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + QuestionsTable.TABLE_NAME);
+        onCreate(db);
+    }
+    private void fillQuestionsTable() {
+        Question q1 = new Question("A is correct", "A", "B", "C", 1);
+    }
+    private void addQuestion(Question question){
+        ContentValues cv = new ContentValues();
+        cv.put(QuestionsTable.TABLE_NAME, question.getQuestion());
+        cv.put(QuestionsTable.COLUMN_OPTION1, question.getOption1());
+        cv.put(QuestionsTable.COLUMN_OPTION2, question.getOption2());
+        cv.put(QuestionsTable.COLUMN_OPTION3, question.getOption3());
+        cv.put(QuestionsTable.COLUMN_ANSWER_NR, question.getAnswerNr());
+
+        db.insert(QuestionsTable.TABLE_NAME, null, cv);
+
 
     }
 }
