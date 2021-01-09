@@ -2,12 +2,15 @@ package com.kirill.quiz;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class QuizActivity extends AppCompatActivity {
@@ -23,6 +26,14 @@ public class QuizActivity extends AppCompatActivity {
 
     private List<Question> questionList;
 
+    private ColorStateList textColourDefaultRb;//green or red color of the answer
+    private int questionCounter;
+    private int questionCountTotal;
+
+    private Question currentQuestion;
+    private int score;
+    private boolean answered;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,13 +43,45 @@ public class QuizActivity extends AppCompatActivity {
         textViewScore = findViewById(R.id.text_view_score);
         textViewCountDown = findViewById(R.id.text_view_countdown);
         textViewQuestionCount = findViewById(R.id.text_view_question_count);
-        buttonConfirmNext = findViewById(R.id.button_confirm_next);
         rb1 = findViewById(R.id.radio_button1);
         rb2 = findViewById(R.id.radio_button2);
         rb3 = findViewById(R.id.radio_button3);
+        buttonConfirmNext = findViewById(R.id.button_confirm_next);
+
+        textColourDefaultRb = rb1.getTextColors();
 
         QuizDbHelper dbHelper = new QuizDbHelper(this);
         questionList = dbHelper.getAllQuestions();//filling actual question objects with db data
+        questionCountTotal = questionList.size();
+        Collections.shuffle(questionList);//randomize questions
 
+        showNextQuestion();
+
+    }
+
+    private void showNextQuestion() {
+        rb1.setTextColor(textColourDefaultRb);//setting radio buttons colors to default color before making a choice->
+        rb2.setTextColor(textColourDefaultRb);// right - green, fail - red
+        rb3.setTextColor(textColourDefaultRb);
+        rbGroup.clearCheck();//make all options uncheck
+
+        if(questionCounter < questionCountTotal){
+            currentQuestion = questionList.get(questionCounter);
+
+            textViewQuestion.setText(currentQuestion.getQuestion());//showing actual question
+            rb1.setText(currentQuestion.getOption1());
+            rb2.setText(currentQuestion.getOption2());
+            rb3.setText(currentQuestion.getOption3());
+            questionCounter++;
+            textViewQuestionCount.setText("Question N. "+ questionCounter + " / " + questionCountTotal);
+            answered = false;
+            buttonConfirmNext.setText("Confirm");
+        }else{
+            finishQuiz();
+        }
+
+    }
+
+    private void finishQuiz() {
     }
 }
